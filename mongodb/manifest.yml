@@ -10,14 +10,17 @@ metadata:
     tier: database
 spec:
   clusterIP: None #HEADLESS SERVICE FOR STATEFUL SET
-  selector:
+  selector:  # Ee labels unna pods ki ee service connect cheyyi
     component: mongodb
     project: roboshop
     tier: database
-  ports:
+  ports: #Service ye ports expose cheyyalo.
   - protocol: TCP
     port: 27017 # service port
     targetPort: 27017 # container port
+
+# Outside service → 27017
+# Inside container → 27017 Traffic forwarding jaruguthundi.
 ---
 apiVersion: v1
 kind: Service #Applications mongodb ni access cheyyadaniki.
