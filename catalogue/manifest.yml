@@ -24,19 +24,19 @@ metadata:
 spec:
   replicas: 1
   # These are the labels replica set use to create pod replicas, this should match pod labels
-  selector:
-    matchLabels:
+  selector: 
+    matchLabels: #Deployment ye pods ni manage cheyyalo identify chesthundi.
       component: catalogue
       project: roboshop
       tier: app
   # This is pod definition
-  template:
+  template: #Pods ela create avvali? ani define chestham.
     metadata:
-      labels:
+      labels: #Must match selector labels.Lekapothe deployment pods ni identify cheyyaledu.
         component: catalogue
         project: roboshop
         tier: app
-    spec:
+    spec: #POD SPEC, ACTUAL POD DETAILS
       containers:
       - name: catalogue
         image: venkattholeti/catalogue:v1
@@ -48,11 +48,11 @@ spec:
             cpu: "100m"
             memory: "256Mi"
         envFrom:
-        - configMapRef:
+        - configMapRef: #ConfigMap values ni container env vars ga inject chesthundi.
             name: catalogue
 ---
 apiVersion: v1
-kind: Service
+kind: Service #Catalogue app ni expose cheyyadaniki.
 metadata:
   name: catalogue
   namespace: roboshop
@@ -60,8 +60,8 @@ metadata:
     component: catalogue
     project: roboshop
     tier: app
-spec:
-  selector:
+spec:  
+  selector: # Catalogue pods ni select chesthundi.
     component: catalogue
     project: roboshop
     tier: app
@@ -69,6 +69,8 @@ spec:
   - protocol: TCP
     port: 8080 # service port
     targetPort: 8080 # container port
+
+# Apps direct pod IP use cheyyavu.Because pods recreate ayithe IP change avthundi.Service stable endpoint istundi.
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -76,16 +78,16 @@ metadata:
   name: catalogue
   namespace: roboshop
 spec:
-  scaleTargetRef:
+  scaleTargetRef: #Which deployment ni scale cheyyalo.
     apiVersion: apps/v1
     kind: Deployment
     name: catalogue
   minReplicas: 1
   maxReplicas: 10
-  metrics:
+  metrics: #Scaling base enti?
   - type: Resource
     resource:
-      name: cpu
+      name: cpu #CPU usage base cheskoni scale chesthundi.
       target:
         type: Utilization
         averageUtilization: 10
