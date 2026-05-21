@@ -1,6 +1,6 @@
 ---
 apiVersion: v1
-kind: Service
+kind: Service # Pod-to-pod communication kosam.
 metadata:
   name: mongodb-headless
   namespace: roboshop
@@ -9,7 +9,7 @@ metadata:
     project: roboshop
     tier: database
 spec:
-  clusterIP: None
+  clusterIP: None #HEADLESS SERVICE FOR STATEFUL SET
   selector:
     component: mongodb
     project: roboshop
@@ -20,7 +20,7 @@ spec:
     targetPort: 27017 # container port
 ---
 apiVersion: v1
-kind: Service
+kind: Service #Applications mongodb ni access cheyyadaniki.
 metadata:
   name: mongodb
   namespace: roboshop
@@ -49,13 +49,13 @@ metadata:
     tier: database
 spec:
   selector:
-    matchLabels:
+    matchLabels:  #StatefulSet manage cheyyalsina pods labels.
       component: mongodb
       project: roboshop
       tier: database # has to match .spec.template.metadata.labels
   serviceName: "mongodb-headless" # this should be headless service
   replicas: 3 # by default is 1
-  template:
+  template:  #Pods ela create avvalo define chestham.
     metadata:
       labels:
         component: mongodb
@@ -65,11 +65,11 @@ spec:
       containers:
       - name: mongodb
         image: venkattholeti/mongodb:v1
-        volumeMounts:
+        volumeMounts:  #MongoDB data ekkada store cheyyalo chepthundi.
         - name: mongodb-data
           mountPath: /data/db
   # This is nothing but PVC, you can directly create here
-  volumeClaimTemplates:
+  volumeClaimTemplates:  #Each pod ki separate PVC create chesthundi.
   - metadata:
       name: mongodb-data
     spec:
@@ -78,3 +78,14 @@ spec:
       resources:
         requests:
           storage: 2Gi
+
+------------------------------------
+
+
+    #             mongodb service
+    #                    |
+    #      ----------------------------
+    #      |            |             |
+    #  mongodb-0    mongodb-1    mongodb-2
+    #      |            |             |
+    #    PVC          PVC           PVC
